@@ -18,8 +18,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    //attribute routing
+    endpoints.MapControllers();
+});
+
+//a concise way to enable attribute routing for controllers
+//app.MapControllers();
+
 
 app.Run();
