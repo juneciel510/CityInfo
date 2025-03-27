@@ -1,11 +1,27 @@
+using Microsoft.AspNetCore.StaticFiles;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddControllers();
+//when user asks for some format that the server dosent support, return 406 error
+builder.Services.AddControllers(options =>
+{
+    options.ReturnHttpNotAcceptable=true;
+}).AddXmlDataContractSerializerFormatters();
+
+builder.Services.AddProblemDetails(options => 
+{
+    options.CustomizeProblemDetails = ctx =>
+    {
+        ctx.ProblemDetails.Extensions.Add("additionalInfo", "Additional info example");
+        ctx.ProblemDetails.Extensions.Add("server", Environment.MachineName);
+    };
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddSingleton<FileExtensionContentTypeProvider>();
 
 var app = builder.Build();
 
@@ -18,8 +34,18 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+app.UseRouting();
+
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseEndpoints(endpoints =>
+{
+    //attribute routing
+    endpoints.MapControllers();
+});
+
+//a concise way to enable attribute routing for controllers
+//app.MapControllers();
+
 
 app.Run();
