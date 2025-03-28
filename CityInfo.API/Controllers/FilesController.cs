@@ -34,5 +34,28 @@ namespace CityInfo.API.Controllers
             var fileBytes = System.IO.File.ReadAllBytes(pathToFile);
             return File(fileBytes, contentType, Path.GetFileName(pathToFile));
         }
+
+        [HttpPost]
+        public async Task<ActionResult> CreateFile(IFormFile file)
+        {
+            if (file.Length == 0 || file.Length > 20971520 || file.ContentType != "application/pdf")
+            {
+                return BadRequest("No file or an invalid one has been inputted.");
+            }
+
+            //Create the file path. Avoid using file.FileName as it can be manipulated by the user.
+            //As an attacker can provide a malicious one, including fulls or relative paths.
+            //the store directory should not have the execute permission
+            var path =Path.Combine(Directory.GetCurrentDirectory(), $"uploaded_file_{Guid.NewGuid()}.pdf");
+
+            using(var stream = new FileStream(path, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            return Ok("Your file has been uploaded successfully.");
+        }
+
+
     }
 }
