@@ -49,6 +49,7 @@ builder.Services.AddSingleton<CitiesDataStore>();
 builder.Services.AddDbContext<CityInfoContext>(
 dbContextOptions => dbContextOptions.UseSqlite(builder.Configuration["ConnectionStrings:CityInfoDBConnectionString"]));
 
+builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 if (!app.Environment.IsDevelopment())
