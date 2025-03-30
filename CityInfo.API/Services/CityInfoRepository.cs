@@ -28,7 +28,7 @@ namespace CityInfo.API.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<City>> GetCitiesAsync(string? cityName, string? searchQuery, bool includePointsOfInterest)
+        public async Task<(IEnumerable<City>, PaginationMetadata)> GetCitiesAsync(string? cityName, string? searchQuery, bool includePointsOfInterest, int pageNumber, int pageSize)
         {
             IQueryable<City> cities = _context.Cities;
 
@@ -37,10 +37,6 @@ namespace CityInfo.API.Services
             {
                 cities = cities.Include(c => c.PointsOfInterest);
             }
-
-            // Apply ordering
-            cities = cities.OrderBy(c => c.Name);
-
 
             // Apply filtering if parameters provided
             if (!string.IsNullOrWhiteSpace(cityName)) 
@@ -56,7 +52,17 @@ namespace CityInfo.API.Services
                 cities = cities.Where(c => c.Name.Contains(searchQuery) || (c.Description!=null &&c.Description.Contains(searchQuery)));
             }
 
-            return await cities.ToListAsync();
+            // Apply pagination
+            var totalCities = await cities.CountAsync();
+            var paginationMetadata = new PaginationMetadata(totalCities, pageSize, pageNumber);
+
+            //Query is deferred until ToListAsync() is called
+            var citiesToReturn = await cities
+                .OrderBy(c => c.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            return (citiesToReturn, paginationMetadata);
 
         }
 

@@ -11,6 +11,6 @@ namespace CityInfo.API.Services
         Task<bool> SaveAsync();
         Task AddPointOfInterestForCityAsync(int cityId, PointOfInterest pointOfInterest);
         void DeletePointOfInterest(PointOfInterest pointOfInterest);
-        Task<IEnumerable<City>> GetCitiesAsync(string? cityName, string? searchQuery, bool includePointsOfInterest);
+        Task<(IEnumerable<City>, PaginationMetadata)> GetCitiesAsync(string? cityName, string? searchQuery, bool includePointsOfInterest, int pageNumber, int pageSize);
     }
 }
