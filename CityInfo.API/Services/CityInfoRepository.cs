@@ -13,10 +13,6 @@ namespace CityInfo.API.Services
         {
             _context=context?? throw new ArgumentNullException(nameof(context));
         }
-        public async Task<IEnumerable<City>> GetCitiesAsync()
-        {
-            return await _context.Cities.OrderBy(c=>c.Name).ToListAsync();
-        }
 
         public async Task<City?> GetCityAsync(int cityId, bool includePointsOfInterest)
         {
@@ -32,26 +28,36 @@ namespace CityInfo.API.Services
                 .FirstOrDefaultAsync();
         }
 
-        public async Task<IEnumerable<City>> GetCitiesAsync(string? cityName, bool includePointsOfInterest)
+        public async Task<IEnumerable<City>> GetCitiesAsync(string? cityName, string? searchQuery, bool includePointsOfInterest)
         {
-            if (string.IsNullOrWhiteSpace(cityName))
-            {
-                return await GetCitiesAsync();
-            }
+            IQueryable<City> cities = _context.Cities;
 
-            cityName=cityName.Trim();
+            // Apply include if needed
             if (includePointsOfInterest)
             {
-                return await _context.Cities
-                    .Include(c => c.PointsOfInterest)
-                    .Where(c => c.Name.Contains(cityName))
-                    .OrderBy(c => c.Name)
-                    .ToListAsync();
+                cities = cities.Include(c => c.PointsOfInterest);
             }
-            return await _context.Cities
-                .Where(c => c.Name.Contains(cityName))
-                .OrderBy(c => c.Name)
-                .ToListAsync();
+
+            // Apply ordering
+            cities = cities.OrderBy(c => c.Name);
+
+
+            // Apply filtering if parameters provided
+            if (!string.IsNullOrWhiteSpace(cityName)) 
+            {
+                cityName = cityName.Trim();
+                cities = cities.Where(c => c.Name.Contains(cityName));
+            }
+
+            if(!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                //could be improve by applying full text search using a Search Library (Lucene.NET) public  
+                cities = cities.Where(c => c.Name.Contains(searchQuery) || (c.Description!=null &&c.Description.Contains(searchQuery)));
+            }
+
+            return await cities.ToListAsync();
+
         }
 
         public async Task<bool> CityExistsAsync(int cityId)
@@ -105,5 +111,10 @@ namespace CityInfo.API.Services
             }
 
         }
+
+        //public async Task<IEnumerable<City>> SearchCitiesAsync(string search, bool includePointsOfInterest)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }

@@ -21,15 +21,6 @@ namespace CityInfo.API.Controllers
             _mapper = mapper?? throw new ArgumentNullException(nameof(mapper));
         }
 
-        [HttpGet()]
-        public async Task<ActionResult<IEnumerable<CityWithoutPointsOfInterestDto>>> GetCities()
-        {
-            var cityEntities = await _cityInfoRepository.GetCitiesAsync();
-
-            var results = _mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntities);
-
-            return Ok(results);
-        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetCity(int id, bool includePointsOfInterest=false)
@@ -45,18 +36,23 @@ namespace CityInfo.API.Controllers
             return Ok(_mapper.Map<CityWithoutPointsOfInterestDto>(cityEntity));
         }
 
-        [HttpGet("name/{cityName}")]
-        public async Task<IActionResult> GetCities(string cityName, bool includePointsOfInterest = false)
+
+        [HttpGet]
+        public async Task<IActionResult> GetCities(
+       [FromQuery] string? name = null,
+       [FromQuery] string? search = null,
+       [FromQuery] bool includePointsOfInterest = false)
         {
-            var cityEntity = await _cityInfoRepository.GetCitiesAsync(cityName, includePointsOfInterest);
-            if (cityEntity == null)
+            var searchResults = await _cityInfoRepository.GetCitiesAsync(name,search, includePointsOfInterest);
+            if (searchResults == null || searchResults.Count() == 0)
             {
                 return NotFound();
             }
             if (includePointsOfInterest)
-                return Ok(_mapper.Map<IEnumerable<CityDto>>(cityEntity));
+                return Ok(_mapper.Map<IEnumerable<CityDto>>(searchResults));
 
-            return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(cityEntity));
+            return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(searchResults));
+
         }
 
     }
