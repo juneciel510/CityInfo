@@ -32,6 +32,11 @@ namespace CityInfo.API.Services
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<bool> CityExistsAsync(int cityId)
+        {
+            return await _context.Cities.AnyAsync(c => c.Id == cityId);
+        }
+
         public async Task<PointOfInterest?> GetPointOfInterestForCityAsync(int cityId, int pointOfInterestId)
         {
             
@@ -43,6 +48,40 @@ namespace CityInfo.API.Services
         public async Task<IEnumerable<PointOfInterest>> GetPointsOfInterestForCityAsync(int cityId)
         {
             return await _context.PointsOfInterest.Where(p=>p.CityId==cityId).ToListAsync();
+        }
+
+        public async Task AddPointOfInterestForCityAsync(int cityId, PointOfInterest pointOfInterest)
+        {
+            var city = await GetCityAsync(cityId, false);
+            //the line below is not an I/O operation, thus no need to use async
+            city?.PointsOfInterest.Add(pointOfInterest);
+        }
+
+        //this approach also works for deleting a point of interest,but here we choose another one below
+        //public async Task DeletePointOfInterestForCityAsync(int cityId, PointOfInterest pointOfInterest)
+        //{
+        //    var city = await GetCityAsync(cityId, false);
+        //    //the line below is not an I/O operation, thus no need to use async
+        //    city?.PointsOfInterest.Remove(pointOfInterest);
+        //}
+
+        public void DeletePointOfInterest(PointOfInterest pointOfInterest)
+        {
+            _context.PointsOfInterest.Remove(pointOfInterest);
+        }
+
+        public async Task<bool> SaveAsync()
+        {
+
+            try
+            {
+                return await _context.SaveChangesAsync() > 0;
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+
         }
     }
 }
