@@ -13,10 +13,6 @@ namespace CityInfo.API.Services
         {
             _context=context?? throw new ArgumentNullException(nameof(context));
         }
-        public async Task<IEnumerable<City>> GetCitiesAsync()
-        {
-            return await _context.Cities.OrderBy(c=>c.Name).ToListAsync();
-        }
 
         public async Task<City?> GetCityAsync(int cityId, bool includePointsOfInterest)
         {
@@ -30,6 +26,44 @@ namespace CityInfo.API.Services
             return await _context.Cities
                 .Where(c => c.Id == cityId)
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<(IEnumerable<City>, PaginationMetadata)> GetCitiesAsync(string? cityName, string? searchQuery, bool includePointsOfInterest, int pageNumber, int pageSize)
+        {
+            IQueryable<City> cities = _context.Cities;
+
+            // Apply include if needed
+            if (includePointsOfInterest)
+            {
+                cities = cities.Include(c => c.PointsOfInterest);
+            }
+
+            // Apply filtering if parameters provided
+            if (!string.IsNullOrWhiteSpace(cityName)) 
+            {
+                cityName = cityName.Trim();
+                cities = cities.Where(c => c.Name.Contains(cityName));
+            }
+
+            if(!string.IsNullOrWhiteSpace(searchQuery))
+            {
+                searchQuery = searchQuery.Trim();
+                //could be improve by applying full text search using a Search Library (Lucene.NET) public  
+                cities = cities.Where(c => c.Name.Contains(searchQuery) || (c.Description!=null &&c.Description.Contains(searchQuery)));
+            }
+
+            // Apply pagination
+            var totalCities = await cities.CountAsync();
+            var paginationMetadata = new PaginationMetadata(totalCities, pageSize, pageNumber);
+
+            //Query is deferred until ToListAsync() is called
+            var citiesToReturn = await cities
+                .OrderBy(c => c.Name)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+            return (citiesToReturn, paginationMetadata);
+
         }
 
         public async Task<bool> CityExistsAsync(int cityId)
@@ -83,5 +117,10 @@ namespace CityInfo.API.Services
             }
 
         }
+
+        //public async Task<IEnumerable<City>> SearchCitiesAsync(string search, bool includePointsOfInterest)
+        //{
+        //    throw new NotImplementedException();
+        //}
     }
 }
