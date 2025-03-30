@@ -32,6 +32,28 @@ namespace CityInfo.API.Services
                 .FirstOrDefaultAsync();
         }
 
+        public async Task<IEnumerable<City>> GetCitiesAsync(string? cityName, bool includePointsOfInterest)
+        {
+            if (string.IsNullOrWhiteSpace(cityName))
+            {
+                return await GetCitiesAsync();
+            }
+
+            cityName=cityName.Trim();
+            if (includePointsOfInterest)
+            {
+                return await _context.Cities
+                    .Include(c => c.PointsOfInterest)
+                    .Where(c => c.Name.Contains(cityName))
+                    .OrderBy(c => c.Name)
+                    .ToListAsync();
+            }
+            return await _context.Cities
+                .Where(c => c.Name.Contains(cityName))
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+
         public async Task<bool> CityExistsAsync(int cityId)
         {
             return await _context.Cities.AnyAsync(c => c.Id == cityId);
