@@ -118,9 +118,11 @@ namespace CityInfo.API.Services
 
         }
 
-        //public async Task<IEnumerable<City>> SearchCitiesAsync(string search, bool includePointsOfInterest)
-        //{
-        //    throw new NotImplementedException();
-        //}
+        public async  Task<bool> CityNameMatchesCityId(string? cityName, int cityId)
+        {
+            return await _context.Cities.AnyAsync(c => c.Name == cityName && c.Id == cityId);
+        }
+
+        
     }
 }

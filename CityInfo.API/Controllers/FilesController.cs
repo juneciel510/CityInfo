@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.StaticFiles;
 using System.Runtime;
@@ -6,6 +7,7 @@ using System.Runtime;
 namespace CityInfo.API.Controllers
 {
     [Route("api/files")]
+    [Authorize]
     [ApiController]
     public class FilesController : ControllerBase
     {
