@@ -28,8 +28,17 @@ namespace CityInfo.API.Controllers
             _mapper = mapper?? throw new ArgumentNullException(nameof(mapper));
         }
 
-
+        /// <summary>
+        /// Get a specific city by id
+        /// </summary>
+        /// <param name="id">The id of the city to get</param>
+        /// <param name="includePointsOfInterest">Whether or not to include the points of interest</param>
+        /// <returns>A city with or without points of interest</returns>
+        /// <response code="200">Returns the requested city</response>
         [HttpGet("{id}")]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<IActionResult> GetCity(int id, bool includePointsOfInterest=false)
         {
             var cityEntity =await _cityInfoRepository.GetCityAsync(id,includePointsOfInterest);
@@ -44,20 +53,29 @@ namespace CityInfo.API.Controllers
         }
 
 
+        /// <summary>
+        /// Get a list of cities with optional filtering, searching, and pagination.
+        /// </summary>
+        /// <param name="name">The name to filter cities by.</param>
+        /// <param name="search">The search term to filter cities by.</param>
+        /// <param name="includePointsOfInterest">Whether to include points of interest in the results.</param>
+        /// <param name="pageNumber">The page number for pagination.</param>
+        /// <param name="pageSize">The page size for pagination.</param>
+        /// <returns>A list of cities.</returns>
         [HttpGet]
         public async Task<IActionResult> GetCities(
             [FromQuery] string? name = null,
             [FromQuery] string? search = null,
             [FromQuery] bool includePointsOfInterest = false,
-            [FromQuery] int pageNumber=1,
-            [FromQuery] int pageSize=10)
+            [FromQuery] int pageNumber = 1,
+            [FromQuery] int pageSize = 10)
         {
-            if(pageSize > maxPageSize)
+            if (pageSize > maxPageSize)
             {
-                pageSize=maxPageSize;
+                pageSize = maxPageSize;
             }
             (var searchResults, var paginationMetadata) = await _cityInfoRepository
-                .GetCitiesAsync(name,search, includePointsOfInterest,pageNumber,pageSize);
+                .GetCitiesAsync(name, search, includePointsOfInterest, pageNumber, pageSize);
             if (searchResults == null || searchResults.Count() == 0)
             {
                 return NotFound();
@@ -68,7 +86,6 @@ namespace CityInfo.API.Controllers
                 return Ok(_mapper.Map<IEnumerable<CityDto>>(searchResults));
 
             return Ok(_mapper.Map<IEnumerable<CityWithoutPointsOfInterestDto>>(searchResults));
-
         }
 
     }
