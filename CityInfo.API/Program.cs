@@ -1,3 +1,4 @@
+using Asp.Versioning;
 using CityInfo.API;
 using CityInfo.API.DbContexts;
 using CityInfo.API.Services;
@@ -78,6 +79,13 @@ builder.Services.AddAuthorization(options =>
         policyBuilder.RequireClaim("city", "Antwerp");
     });
 });
+
+builder.Services.AddApiVersioning(setupAction =>
+{
+    setupAction.ReportApiVersions = true;
+    setupAction.AssumeDefaultVersionWhenUnspecified = true;
+    setupAction.DefaultApiVersion = new ApiVersion(1, 0);
+}).AddMvc();
 
 // Configure the HTTP request pipeline.
 var app = builder.Build();
