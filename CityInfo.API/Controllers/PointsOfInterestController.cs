@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using Asp.Versioning;
+using AutoMapper;
 using CityInfo.API.Entities;
 using CityInfo.API.Models;
 using CityInfo.API.Services;
@@ -9,9 +10,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CityInfo.API.Controllers
 {
-    [Route("api/cities/{cityId}/pointsofinterest")]
+    [Route("api/v{version:apiVersion}/cities/{cityId}/pointsofinterest")]
     [Authorize(Policy = "MustBeFromAntwerp")]
     [ApiController]
+    [ApiVersion(2)]
     public class PointsOfInterestController : ControllerBase
     {
         private readonly ILogger<PointOfInterestDto> _logger;
@@ -60,6 +62,7 @@ namespace CityInfo.API.Controllers
            
         }
 
+        //Dto class that wrapped into the ActionResult, would be shown in the swagger UI
         [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
         public async Task<ActionResult<PointOfInterestDto>> GetPointOfInterest(int cityId,int pointOfInterestId)
         {
