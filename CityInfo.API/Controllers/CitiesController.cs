@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 namespace CityInfo.API.Controllers
 {
     [ApiController]
-    [Authorize]
+    //[Authorize]
     [Route("api/cities")]
     public class CitiesController : ControllerBase
     {
