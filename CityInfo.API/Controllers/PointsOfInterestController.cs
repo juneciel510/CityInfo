@@ -62,6 +62,7 @@ namespace CityInfo.API.Controllers
            
         }
 
+        //Dto class that wrapped into the ActionResult, would be shown in the swagger UI
         [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
         public async Task<ActionResult<PointOfInterestDto>> GetPointOfInterest(int cityId,int pointOfInterestId)
         {
