@@ -1,8 +1,8 @@
 name: Build and deploy .NET Core application to Web App CityInfoAPI20250404172705
 on:
   push:
-    branches:
-    - master
+    # branches:
+    # - master
 env:
   AZURE_WEBAPP_NAME: CityInfoAPI20250404172705
   AZURE_WEBAPP_PACKAGE_PATH: CityInfo.API\publish
