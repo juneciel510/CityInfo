@@ -1,0 +1,56 @@
+# For more info on HTTP files go to https://aka.ms/vs/httpfile
+@schema=https
+@hostname=localhost 
+@port=7068
+@token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIiwiZ2l2ZW5fbmFtZSI6IktldmluIiwiZmFtaWx5X25hbWUiOiJEb2NreCIsImNpdHkiOiJBbnR3ZXJwIiwibmJmIjoxNzQzNzczNjE0LCJleHAiOjE3NDM3NzcyMTQsImlzcyI6Imh0dHBzOi8vbG9jYWxob3N0OjcwNjgiLCJhdWQiOiJjaXR5aW5mb2FwaSJ9.GBA3aWFZptUFUXuA_EMAJM1YIpUUDK-nV9IrVWu1mGM
+
+
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities
+Authorization: Bearer {{token}}
+###
+
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities?includePointsOfInterest=true
+Authorization: Bearer {{token}}
+###
+
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities
+Accept: application/xml
+Authorization: Bearer {{token}}
+
+###
+
+
+
+POST {{schema}}://{{hostname}}:{{port}}/api/v2/cities/1/pointsofinterest
+Accept: application/json
+Content-Type: application/json
+Authorization: Bearer {{token}}
+
+{
+  "name": "A name for testing",
+  "description": "A description for testing"
+} 
+
+###
+
+
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities/1/pointsofinterest/18
+Accept: application/json
+Authorization: Bearer {{token}}
+
+###
+
+// get a token 
+POST {{schema}}://{{hostname}}:{{port}}/api/authentication/authenticate
+Content-Type: application/json
+
+{
+    "username": "KevinDockx",
+    "password": "This is a relatively long sentence that acts as my password"
+}
+
+###
+
+// authenticated GET request
+GET {{schema}}://{{hostname}}:{{port}}/api/v2/cities
+Authorization: Bearer {{token}}
