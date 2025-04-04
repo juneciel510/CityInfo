@@ -87,9 +87,21 @@ builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
+
+
 builder.Services.AddAuthentication("Bearer")
     .AddJwtBearer("Bearer", options =>
     {
+        if (string.IsNullOrEmpty(builder.Configuration["Authentication:SecretForKey"]))
+        {
+            throw new InvalidOperationException("Secret key Empty");
+        }
+
+        if (IsBase64String(builder.Configuration["Authentication:SecretForKey"]))
+        {
+            throw new InvalidOperationException("Not Base64 string");
+        }
+
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
@@ -102,6 +114,15 @@ builder.Services.AddAuthentication("Bearer")
                 Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"]))
         };
     });
+
+
+
+// Helper method to check Base64 validity
+static bool IsBase64String(string s)
+{
+    Span<byte> buffer = new Span<byte>(new byte[s.Length]);
+    return Convert.TryFromBase64String(s, buffer, out _);
+}
 
 builder.Services.AddAuthorization(options =>
 {

@@ -1,4 +1,4 @@
-name: Build and deploy .NET Core application to Web App CityInfoAPI20250404172705
+﻿name: Build and deploy .NET Core application to Web App CityInfoAPI20250404172705
 on:
   push:
     # branches:
@@ -35,6 +35,27 @@ jobs:
     runs-on: windows-latest
     needs: build
     steps:
+    - name: Test Key Vault Secret Retrieval
+      uses: Azure/get-keyvault-secrets@v1
+      with:
+        keyvault: "CityInfoKey"       # Replace with your vault name
+        secrets: "Authentication--SecretForKey"          # The secret to test (e.g., DatabasePassword)
+      id: kv-test
+      continue-on-error: true              # Prevents workflow failure if secret is missing
+
+    - name: Verify Secret (Masked Output)
+      run: |
+        # Mask the secret in logs (security best practice)
+        echo "::add-mask::${{ steps.kv-test.outputs.Authentication--SecretForKey }}"
+    
+        # Check if secret was retrieved
+        if [ -z "${{ steps.kv-test.outputs.YourSecretName }}" ]; then
+          echo "❌ Error: Secret 'Authentication--SecretForKey' is empty or not found!"
+          exit 1
+        else
+          echo "✅ Success: Secret retrieved (length: ${#{{ steps.kv-test.outputs.Authentication--SecretForKey }}} chars)"
+        fi
+
     - name: Download artifact from build job
       uses: actions/download-artifact@v4
       with:
