@@ -37,8 +37,16 @@ else
     var secretClient = new SecretClient(
             new Uri("https://cityinfokey.vault.azure.net/"),
             new DefaultAzureCredential());
-    builder.Configuration.AddAzureKeyVault(secretClient,
-        new KeyVaultSecretManager());
+    //builder.Configuration.AddAzureKeyVault(secretClient,
+    //    new KeyVaultSecretManager());
+    var secret = await secretClient.GetSecretAsync("Authentication--SecretForKey");
+
+    if (string.IsNullOrEmpty(secret.Value.Value))
+    {
+        throw new Exception("Missing required secret");
+    }
+
+    builder.Configuration["Authentication:SecretForKey"] = secret.Value.Value;
 
     builder.Host.UseSerilog(
         (context, loggerConfiguration) => loggerConfiguration
