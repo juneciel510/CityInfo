@@ -50,7 +50,6 @@ else
                 InstrumentationKey = builder.Configuration["ApplicationInsightsInstrumentationKey"]
             }, TelemetryConverter.Traces));
 }
-
 // Add services to the container.
 
 //when user asks for some format that the server doesnt support, return 406 error
@@ -88,78 +87,21 @@ builder.Services.AddScoped<ICityInfoRepository, CityInfoRepository>();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 
-
-
-if (environment == Environments.Development)
-{
-    if (string.IsNullOrEmpty(builder.Configuration["Authentication:SecretForKey"]))
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer(options =>
     {
-        throw new InvalidOperationException("Secret key Empty");
-    }
-
-    if (IsBase64String(builder.Configuration["Authentication:SecretForKey"]))
-    {
-        throw new InvalidOperationException("Not Base64 string");
-    }
-    builder.Services.AddAuthentication("Bearer")
-   .AddJwtBearer("Bearer", options =>
-   {
-
-
-       options.TokenValidationParameters = new TokenValidationParameters
-       {
-           ValidateIssuer = true,
-           ValidateAudience = true,
-           ValidateLifetime = true,
-           ValidateIssuerSigningKey = true,
-           ValidIssuer = builder.Configuration["Authentication:Issuer"],
-           ValidAudience = builder.Configuration["Authentication:Audience"],
-           IssuerSigningKey = new SymmetricSecurityKey(
+        options.TokenValidationParameters = new()
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Authentication:Issuer"],
+            ValidAudience = builder.Configuration["Authentication:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
                Convert.FromBase64String(builder.Configuration["Authentication:SecretForKey"]))
-       };
-   });
-
-}
-else
-{
-    if (string.IsNullOrEmpty(builder.Configuration["ApplicationInsightsInstrumentationKey"]))
-    {
-        throw new InvalidOperationException("Secret key Empty");
+        };
     }
-
-    if (IsBase64String(builder.Configuration["ApplicationInsightsInstrumentationKey"]))
-    {
-        throw new InvalidOperationException("Not Base64 string");
-    }
-
-    builder.Services.AddAuthentication("Bearer")
-   .AddJwtBearer("Bearer", options =>
-   {
-       options.TokenValidationParameters = new TokenValidationParameters
-       {
-           ValidateIssuer = true,
-           ValidateAudience = true,
-           ValidateLifetime = true,
-           ValidateIssuerSigningKey = true,
-           ValidIssuer = builder.Configuration["Authentication:Issuer"],
-           ValidAudience = builder.Configuration["Authentication:Audience"],
-           IssuerSigningKey = new SymmetricSecurityKey(
-               Convert.FromBase64String(builder.Configuration["ApplicationInsightsInstrumentationKey"]))
-       };
-   });
-}
-
-
-   
-
-
-
-// Helper method to check Base64 validity
-static bool IsBase64String(string s)
-{
-    Span<byte> buffer = new Span<byte>(new byte[s.Length]);
-    return Convert.TryFromBase64String(s, buffer, out _);
-}
+    );
 
 builder.Services.AddAuthorization(options =>
 {
