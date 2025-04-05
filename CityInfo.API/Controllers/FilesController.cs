@@ -7,8 +7,7 @@ using System.Runtime;
 
 namespace CityInfo.API.Controllers
 {
-    [Route("api/v{version:apiVersion}/files")]
-    [Authorize]
+    [Route("api/v{version:apiVersion}/file")]
     [ApiController]
     public class FilesController : ControllerBase
     {
@@ -19,9 +18,13 @@ namespace CityInfo.API.Controllers
             _fileExtensionContentTypeProvider = fileExtensionContentTypeProvider;
         }
 
-        [HttpGet("{fileId}")]
+        /// <summary>
+        /// Get a pdf file.
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
         [ApiVersion(0.1,Deprecated =true)]
-        public ActionResult GetFile(int fileId)
+        public ActionResult GetFile()
         {
             var pathToFile = "Snellen-Vision-Test.pdf";
 
@@ -39,6 +42,12 @@ namespace CityInfo.API.Controllers
             return File(fileBytes, contentType, Path.GetFileName(pathToFile));
         }
 
+        /// <summary>
+        /// Upload a pdf file.
+        /// </summary>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [Authorize]
         [HttpPost]
         public async Task<ActionResult> CreateFile(IFormFile file)
         {

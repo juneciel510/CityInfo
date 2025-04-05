@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Asp.Versioning;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -7,8 +8,10 @@ using System.Security.Claims;
 
 namespace CityInfo.API.Controllers
 {
-    [Route("api/authentication")]
+    [Route("api/v{version:apiVersion}/authentication")]
     [ApiController]
+    [ApiVersion(1)]
+    [ApiVersion(2)]
     public class AuthenticationController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -19,6 +22,11 @@ namespace CityInfo.API.Controllers
                 throw new ArgumentNullException(nameof(configuration));
         }
 
+        /// <summary>
+        /// Get token for authentication.
+        /// </summary>
+        /// <param name="authenticationRequestBody">Any string for userName and password will grant a token.</param>
+        /// <returns></returns>
         [HttpPost("authenticate")]
         public ActionResult<string> Authenticate(AuthenticationRequestBody authenticationRequestBody)
         {

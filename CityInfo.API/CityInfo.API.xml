@@ -4,6 +4,13 @@
         <name>CityInfo.API</name>
     </assembly>
     <members>
+        <member name="M:CityInfo.API.Controllers.AuthenticationController.Authenticate(CityInfo.API.Controllers.AuthenticationController.AuthenticationRequestBody)">
+            <summary>
+            Get token for authentication.
+            </summary>
+            <param name="authenticationRequestBody">Any string for userName and password will grant a token.</param>
+            <returns></returns>
+        </member>
         <member name="M:CityInfo.API.Controllers.CitiesController.GetCity(System.Int32,System.Boolean)">
             <summary>
             Get a specific city by id
@@ -23,6 +30,68 @@
             <param name="pageNumber">The page number for pagination.</param>
             <param name="pageSize">The page size for pagination.</param>
             <returns>A list of cities.</returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.FilesController.GetFile">
+            <summary>
+            Get a pdf file.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.FilesController.CreateFile(Microsoft.AspNetCore.Http.IFormFile)">
+            <summary>
+            Upload a pdf file.
+            </summary>
+            <param name="file"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.PointsOfInterestController.GetPointsOfInterest(System.Int32)">
+            <summary>
+            Get the points of interests for a certain city.
+            </summary>
+            <param name="cityId">The id of the city.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.PointsOfInterestController.GetPointOfInterest(System.Int32,System.Int32)">
+            <summary>
+            Get a certain point of interest of a certain city.
+            </summary>
+            <param name="cityId">The id of the city.</param>
+            <param name="pointOfInterestId">The id of the point of interest.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.PointsOfInterestController.CreatePointOfInterest(System.Int32,CityInfo.API.Models.PointOfInterestForCreationDto)">
+            <summary>
+            Create a certain point of interest of a certain city.
+            </summary>
+            <param name="cityId">The id of the city.</param>
+            <param name="pointOfInterest">The id of the point of interest.</param>
+            <returns></returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.PointsOfInterestController.UpdatePointOfInterest(System.Int32,System.Int32,CityInfo.API.Models.PointOfInterestForUpdateDto)">
+            <summary>
+            Update a existing point of interest.
+            </summary>
+            <param name="cityId"></param>
+            <param name="pointOfInterestId"></param>
+            <param name="pointOfInterest"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.PointsOfInterestController.PartiallyUpdatePointOfInterest(System.Int32,System.Int32,Microsoft.AspNetCore.JsonPatch.JsonPatchDocument{CityInfo.API.Models.PointOfInterestForUpdateDto})">
+            <summary>
+            Partically update a existing point of interest.
+            </summary>
+            <param name="cityId"></param>
+            <param name="pointOfInterestId"></param>
+            <param name="patchDocument"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CityInfo.API.Controllers.PointsOfInterestController.DeletePointOfInterest(System.Int32,System.Int32)">
+            <summary>
+            Delete a existing point of interest.
+            </summary>
+            <param name="cityId"></param>
+            <param name="pointOfInterestId"></param>
+            <returns></returns>
         </member>
         <member name="T:CityInfo.API.Migrations.CityInfoDBMigrationInitial">
             <inheritdoc />

@@ -33,6 +33,11 @@ namespace CityInfo.API.Controllers
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
 
+        /// <summary>
+        /// Get the points of interests for a certain city.
+        /// </summary>
+        /// <param name="cityId">The id of the city.</param>
+        /// <returns></returns>
         [HttpGet]
         public async Task<ActionResult<IEnumerable<PointOfInterestDto>>> GetPointsOfInterest(int cityId)
         {
@@ -62,9 +67,14 @@ namespace CityInfo.API.Controllers
            
         }
 
-        //Dto class that wrapped into the ActionResult, would be shown in the swagger UI
-        [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")]
-        public async Task<ActionResult<PointOfInterestDto>> GetPointOfInterest(int cityId,int pointOfInterestId)
+        /// <summary>
+        /// Get a certain point of interest of a certain city.
+        /// </summary>
+        /// <param name="cityId">The id of the city.</param>
+        /// <param name="pointOfInterestId">The id of the point of interest.</param>
+        /// <returns></returns>
+        [HttpGet("{pointOfInterestId}", Name = "GetPointOfInterest")] 
+        public async Task<ActionResult<PointOfInterestDto>> GetPointOfInterest(int cityId,int pointOfInterestId) ////Dto class that wrapped into the ActionResult, would be shown in the swagger UI
         {
             if (!await _cityInfoRepository.CityExistsAsync(cityId))
             {
@@ -79,6 +89,12 @@ namespace CityInfo.API.Controllers
             return Ok(_mapper.Map<PointOfInterestDto>(pointOfInterest));
         }
 
+        /// <summary>
+        /// Create a certain point of interest of a certain city.
+        /// </summary>
+        /// <param name="cityId">The id of the city.</param>
+        /// <param name="pointOfInterest">The id of the point of interest.</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<ActionResult<PointOfInterestDto>> CreatePointOfInterest(int cityId, [FromBody] PointOfInterestForCreationDto pointOfInterest)
         {
@@ -113,6 +129,13 @@ namespace CityInfo.API.Controllers
             
         }
 
+        /// <summary>
+        /// Update a existing point of interest.
+        /// </summary>
+        /// <param name="cityId"></param>
+        /// <param name="pointOfInterestId"></param>
+        /// <param name="pointOfInterest"></param>
+        /// <returns></returns>
         [HttpPut("{pointOfInterestId}")]
         public async Task<ActionResult> UpdatePointOfInterest(int cityId, int pointOfInterestId, [FromBody] PointOfInterestForUpdateDto pointOfInterest)
         {
@@ -134,6 +157,13 @@ namespace CityInfo.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Partically update a existing point of interest.
+        /// </summary>
+        /// <param name="cityId"></param>
+        /// <param name="pointOfInterestId"></param>
+        /// <param name="patchDocument"></param>
+        /// <returns></returns>
         [HttpPatch("{pointOfInterestId}")]
         public async Task<ActionResult> PartiallyUpdatePointOfInterest(int cityId, int pointOfInterestId, [FromBody] JsonPatchDocument<PointOfInterestForUpdateDto> patchDocument)
         {
@@ -171,6 +201,12 @@ namespace CityInfo.API.Controllers
             return NoContent();
         }
 
+        /// <summary>
+        /// Delete a existing point of interest.
+        /// </summary>
+        /// <param name="cityId"></param>
+        /// <param name="pointOfInterestId"></param>
+        /// <returns></returns>
         [HttpDelete("{pointOfInterestId}")]
         public async Task<ActionResult> DeletePointOfInterest(int cityId, int pointOfInterestId)
         {
